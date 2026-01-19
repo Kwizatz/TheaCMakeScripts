@@ -17,21 +17,21 @@
 IF(FreeImage_LANGUAGE MATCHES "[Cc][+][+]")
   SET(FreeImage_LANGUAGE_INTERNAL "C++")
   SET(FreeImage_HEADER_NAME FreeImagePlus.h)
-  IF(WIN32)
+  IF(MSVC)
     SET(FreeImage_DEBUG_LIBRARY_NAME FreeImagePlusd)
     SET(FreeImage_RELEASE_LIBRARY_NAME FreeImagePlus)
-  ELSE(WIN32)
+  ELSE(MSVC)
     SET(FreeImage_LIBRARY_NAME freeimageplus)
-  ENDIF(WIN32)
+  ENDIF(MSVC)
 ELSE(FreeImage_LANGUAGE MATCHES "[Cc][+][+]")
   SET(FreeImage_LANGUAGE_INTERNAL "C")
   SET(FreeImage_HEADER_NAME FreeImage.h)
-  IF(WIN32)
+  IF(MSVC)
     SET(FreeImage_DEBUG_LIBRARY_NAME FreeImaged)
     SET(FreeImage_RELEASE_LIBRARY_NAME FreeImage)
-  ELSE(WIN32)
+  ELSE(MSVC)
     SET(FreeImage_LIBRARY_NAME freeimage)
-  ENDIF(WIN32)
+  ENDIF(MSVC)
 ENDIF(FreeImage_LANGUAGE MATCHES "[Cc][+][+]")
 
 # Look for the FreeImage header, first in the user-specified location and then in the system locations
@@ -56,7 +56,7 @@ IF(FreeImage_INCLUDE_DIRS)
     SET(FreeImage_LIBRARY_DIRS ${FreeImage_LIBRARY_DIRS}/lib)
   ENDIF(EXISTS "${FreeImage_LIBRARY_DIRS}/lib")
 
-  IF(WIN32)
+  IF(MSVC)
     FILE(GLOB FreeImage_ALL_DEBUG_LIBS
               ${FreeImage_LIBRARY_DIRS}/${FreeImage_DEBUG_LIBRARY_NAME}.lib
               ${FreeImage_LIBRARY_DIRS}/${CMAKE_LIBRARY_ARCHITECTURE}/${FreeImage_DEBUG_LIBRARY_NAME}.lib)
@@ -85,26 +85,14 @@ IF(FreeImage_INCLUDE_DIRS)
     ELSEIF(FreeImage_RELEASE_LIBRARY)
       SET(FreeImage_LIBRARIES ${FreeImage_RELEASE_LIBRARY})
     ENDIF(FreeImage_DEBUG_LIBRARY AND FreeImage_RELEASE_LIBRARY)
-  ELSE(WIN32)
-    FILE(GLOB FreeImage_ALL_LIBS
-         ${FreeImage_LIBRARY_DIRS}/lib${FreeImage_LIBRARY_NAME}*.so
-         ${FreeImage_LIBRARY_DIRS}/lib${FreeImage_LIBRARY_NAME}*.so.*
-         ${FreeImage_LIBRARY_DIRS}/lib${FreeImage_LIBRARY_NAME}*.dylib
-         ${FreeImage_LIBRARY_DIRS}/lib${FreeImage_LIBRARY_NAME}*.dylib.*
-         ${FreeImage_LIBRARY_DIRS}/${CMAKE_LIBRARY_ARCHITECTURE}/lib${FreeImage_LIBRARY_NAME}*.so
-         ${FreeImage_LIBRARY_DIRS}/${CMAKE_LIBRARY_ARCHITECTURE}/lib${FreeImage_LIBRARY_NAME}*.so.*
-         ${FreeImage_LIBRARY_DIRS}/${CMAKE_LIBRARY_ARCHITECTURE}/lib${FreeImage_LIBRARY_NAME}*.dylib
-         ${FreeImage_LIBRARY_DIRS}/${CMAKE_LIBRARY_ARCHITECTURE}/lib${FreeImage_LIBRARY_NAME}*.dylib.*
-         ${FreeImage_LIBRARY_DIRS}/lib${FreeImage_LIBRARY_NAME}*.a
-         ${FreeImage_LIBRARY_DIRS}/${CMAKE_LIBRARY_ARCHITECTURE}/lib${FreeImage_LIBRARY_NAME}*.a)
-
-    IF(FreeImage_ALL_LIBS)
-      LIST(GET FreeImage_ALL_LIBS 0 FreeImage_LIBRARIES)
-    ELSE(FreeImage_ALL_LIBS)
+  ELSE(MSVC)
+    find_library(FreeImage_LIBRARIES NAMES ${FreeImage_LIBRARY_NAME} PATHS ${FreeImage_LIBRARY_DIRS} DOC
+                 "The FreeImage library")
+    IF(NOT FreeImage_LIBRARIES)
       MESSAGE(STATUS "Couldn't find FreeImage")
       SET(FreeImage_LIBRARIES )
-    ENDIF(FreeImage_ALL_LIBS)
-  ENDIF(WIN32)
+    ENDIF(NOT FreeImage_LIBRARIES)
+  ENDIF(MSVC)
 
   SET(FreeImage_LIBRARIES ${FreeImage_LIBRARIES} CACHE FILEPATH "The location of the FreeImage library")
 
