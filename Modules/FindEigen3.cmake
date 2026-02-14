@@ -35,6 +35,14 @@ IF(EIGEN3_FOUND)
   IF(NOT Eigen3_FIND_QUIETLY)
     MESSAGE(STATUS "Found Eigen3: headers at ${EIGEN3_INCLUDE_DIR}")
   ENDIF(NOT Eigen3_FIND_QUIETLY)
+
+  # Create modern imported target if it doesn't already exist
+  IF(NOT TARGET Eigen3::Eigen)
+    ADD_LIBRARY(Eigen3::Eigen INTERFACE IMPORTED)
+    SET_TARGET_PROPERTIES(Eigen3::Eigen PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${EIGEN3_INCLUDE_DIR}"
+    )
+  ENDIF()
 ELSE(EIGEN3_FOUND)
   IF(Eigen3_FIND_REQUIRED)
     MESSAGE(FATAL_ERROR "Eigen3 not found")
