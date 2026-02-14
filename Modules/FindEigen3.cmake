@@ -38,7 +38,7 @@ IF(EIGEN3_FOUND)
 
   # Create modern imported target if it doesn't already exist
   IF(NOT TARGET Eigen3::Eigen)
-    ADD_LIBRARY(Eigen3::Eigen INTERFACE IMPORTED)
+    ADD_LIBRARY(Eigen3::Eigen INTERFACE IMPORTED GLOBAL)
     SET_TARGET_PROPERTIES(Eigen3::Eigen PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${EIGEN3_INCLUDE_DIR}"
     )
